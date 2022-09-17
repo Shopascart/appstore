@@ -14,21 +14,21 @@ const appStore  = <T>(initialState: IState<T>): IStore => {
             return state;
         },
         set: (name: keyof IState<T>, value: any) => {
-            if (name in state.data) {
+            if (name in state) {
                 state[name] = value;
                 listeners.forEach((listener) => listener());
             } else {
                 throw new Error(
-                    `Intented to set ${name} to ${value} but it is not available in the store`
+                    `Intented to set ${name} to ${value} but it is not available in the state.`
                 );
             }
             return obj;
         },
         get: (name: keyof IState<T>) => {
-            if (name in state.data) {
+            if (name in state) {
                 return state[name];
             } else {
-                throw new Error(`content data '${name}' is not available in the store`);
+                throw new Error(`content '${name}' is not available in the state.`);
             }
         },
         subscribe: (listener: () => void) => {
