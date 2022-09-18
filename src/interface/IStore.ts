@@ -5,9 +5,14 @@ export interface IState<T> {
 export default interface IStore {
     /**
      * Get the state of the store
-     * @returns {IState}
      */
     getState: () => IState<any>;
+    /**
+     * Set the state of the store
+     * @param name The name of the state to set
+     * @param value The value of the state to set
+     */
+    setState: (state: IState<any>) => IStore;
     /**
      * Set a value in the store
         * @param {string} name - The name of the value to set
@@ -23,7 +28,7 @@ export default interface IStore {
      * @param {IState} state - The state of the store
      * @param {function} callback - The callback to call when the store changes
      */
-    subscribe: (listener: () => void) => () => void;
+    subscribe: (listener: (state: IState<any>) => void) => () => void;
     /**
      * _Subscribe to changes in the store. This is a valtio subscribe method
      * @param {IState} state - The state of the store
@@ -31,12 +36,16 @@ export default interface IStore {
      */
     _subscribe: (state: IState<any>, callback: any) => void;
     /**
-     * useSnapshot - This is a valtio useSnapshot method
+     * Create a snapshot that catches changes to the store state
      */
     useSnapshot: (state: IState<any>) => IState<any>;
     /**
      *  Server Initial State
      */
+    /**
+     * Dispatch an action to the store
+     */
+    dispatch: (action: any) => void;
     serverInitialState: (initialState: IState<any>) => IStore;
 }
 

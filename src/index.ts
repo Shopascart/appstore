@@ -1,3 +1,3 @@
-import appStore, { useStore } from "./appStore";
-export { useStore };
+import appStore, { useStore, useStoreState } from "./appStore";
+export { useStore, useStoreState };
 export default appStore;
