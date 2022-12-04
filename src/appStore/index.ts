@@ -1,13 +1,13 @@
 import VALTIO from "./valtio";
 import { IStore, Action } from "../interface";
-import react, { createContext, useContext, useEffect, useState, useSyncExternalStore } from "react";
+import react, {useEffect, useState } from "react";
 
 /**
  * A function that stores the application _state and has methods to operate on it.
- * @param {initialState} _state - The initial _state of the store
+ * @param {initialState} state - The initial state of the store
  * @param {actions} actions - The actions to dispatch to the store
  */
-const appStore  = <State, Actions>({state, actions}: {
+const createStore  = <State, Actions>({state, actions}: {
     state: State;
     actions: Actions;
 }) => {
@@ -17,9 +17,6 @@ const appStore  = <State, Actions>({state, actions}: {
     let obj: IStore<State, Actions> = {
         getState: () => {
             return _state;
-        },
-        getActions: () => {
-            return actions as Actions;
         },
         setState: (_state: State) => {
             _state = _state;
@@ -44,7 +41,8 @@ const appStore  = <State, Actions>({state, actions}: {
                 throw new Error(`content '${name as string}' is not available in the _state.`);
             }
         },
-        getAction: (name: keyof Actions) => {
+        actions: actions,
+        action: (name: keyof Actions) => {
             if (actions && name in actions) {
                 return actions[name];
             } else {
@@ -83,7 +81,21 @@ const appStore  = <State, Actions>({state, actions}: {
 }
 
 
+/**
+ * 
+ * @param store - The store to use
+ * @returns - The state and actions of the store
+ */
+export function useStore<State, Actions>(store: IStore<State, Actions>) : [State, Actions] {
+    const [state, setState] = useState(store.getState());
+    useEffect(() => {
+        store.subscribe(setState);
+    }, [store]);
+    const actions = store.actions;
+    return [state, actions];
+}
+
 
 
 export {IStore, Action};
-export default appStore;
+export default createStore;

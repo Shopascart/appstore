@@ -14,5 +14,5 @@
     "strict": true,
     "target": "es6",
   },
-  "include": [ "store/src/**/*.ts", "store/src/**/*.tsx"],
+  "include": [ "src/**/*.ts", "src/**/*.tsx"],
 }

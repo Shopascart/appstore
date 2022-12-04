@@ -1,6 +1,6 @@
-export type Action<State> ={
+export type Action<State> = {
     [key: string]: (_state: State, payload: any) => void;
- }
+}
 
 export default interface IStore<State, Actions> {
     /**
@@ -8,14 +8,11 @@ export default interface IStore<State, Actions> {
      */
     getState: () => State;
     /**
-     * Get the actions of the store
-    */
-    getActions: () => Actions;
-    /**
-     * Set the state of the store
-     * @param name The name of the state to set
-     * @param value The value of the state to set
-     */
+      * Set the state of the store
+      * @param name The name of the state to set
+      * @param value The value of the state to set
+      * @deprecated Use action instead
+      */
     setState: (state: State) => IStore<State, Actions>;
     /**
      * Set a value in the store
@@ -28,14 +25,28 @@ export default interface IStore<State, Actions> {
      */
     get: (name: keyof State) => any;
     /**
-     * Get an action from the store
+     * Get all actions from the store
+     * @deprecated Use actions instead
      */
-    getAction: (name: keyof Actions) => Actions[keyof Actions];
+    getActions?: () => Actions;
+    /**
+        * Get an action from the store
+        * @deprecated Use action instead
+    */
+    getAction?: (name: keyof Actions) => Actions[keyof Actions];
     /**
      * Subscribe to changes in the store.
      * @param {IState} state - The state of the store
      * @param {function} callback - The callback to call when the store changes
      */
+    /**
+     * Get all actions from the store
+     */
+    actions: Actions;
+    /**
+     * Get an action from the store
+     */
+    action: (name: keyof Actions) => Actions[keyof Actions];
     subscribe: (listener: (state: State) => void) => () => void;
     /**
      * _Subscribe to changes in the store. This is a valtio subscribe method
