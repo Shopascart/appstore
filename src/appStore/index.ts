@@ -7,9 +7,9 @@ import react, {useEffect, useState } from "react";
  * @param {initialState} state - The initial state of the store
  * @param {actions} actions - The actions to dispatch to the store
  */
-const createStore  = <State, Actions>({state, actions}: {
-    state: State;
-    actions: Actions;
+const createStore  = <State extends object, Actions extends object>({state, actions}: {
+    state: State extends object ? State : never;
+    actions: Actions extends object ? Actions : never;
 }) => {
     let _state = VALTIO.proxy<State>(state) as State;
     const listeners: Set<(_state: State) => void> = new Set();
