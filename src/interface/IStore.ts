@@ -52,7 +52,7 @@ export default interface IStore<State, Actions> {
     /**
      * Get an action from the store
      */
-    action: (name: keyof Actions) => Actions[keyof Actions];
+    action: (name: keyof Actions) => Actions[keyof Actions] | undefined;
     subscribe: (listener: (state: State) => void) => () => void;
     /**
      * _Subscribe to changes in the store. This is a valtio subscribe method

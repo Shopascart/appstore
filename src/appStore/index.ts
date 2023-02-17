@@ -10,13 +10,21 @@ import react, { useEffect, useState } from "react";
 
 
 
-const createStore = <State extends object, Actions extends object>({ state, actions }: {
+const createStore = <State extends object, Actions extends object>({ state, actions, config }: {
     state: State extends object ? State : never;
     actions: Actions extends object ? Actions : never;
+    config?: {
+        debug?: boolean;
+    };
 }) => {
     let _state = VALTIO.proxy<State>(state) as State;
     const listeners: Set<(_state: State) => void> = new Set();
     let initialized = false;
+    const setError = (msg: string) => {
+        if (!config || config && config.debug) {
+            throw new Error(msg);
+        }
+    }
     let obj: IStore<State, Actions> = {
         getState: () => {
             return _state;
@@ -31,7 +39,7 @@ const createStore = <State extends object, Actions extends object>({ state, acti
                 _state[name] = value;
                 listeners.forEach((listener) => listener(_state));
             } else {
-                throw new Error(
+                setError(
                     `The state '${name as string}' does not exist in the store.`
                 );
             }
@@ -41,7 +49,7 @@ const createStore = <State extends object, Actions extends object>({ state, acti
             if (name in _state) {
                 return _state[name];
             } else {
-                throw new Error(`content '${name.toString()}' is not available in the _state.`);
+                setError(`content '${name.toString()}' is not available in the _state.`);
             }
         },
         actions: actions,
@@ -49,7 +57,7 @@ const createStore = <State extends object, Actions extends object>({ state, acti
             if (actions && name in actions) {
                 return actions[name];
             } else {
-                throw new Error(`content '${name.toString()}' is not available in the actions.`);
+                setError(`content '${name.toString()}' is not available in the actions.`);
             }
         },
         subscribe: (listener: (_state: State) => void) => {
@@ -64,11 +72,14 @@ const createStore = <State extends object, Actions extends object>({ state, acti
         },
         dispatch: (action, payload, ...rest) => {
             const isRestEmpty = rest.length === 0;
+            if (!isRestEmpty) {
+                setError(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
+            }
             function isInstanceofPayload(obj: any): obj is Payload {
                 return 'value' in obj || 'value' in obj && 'options' in obj;
             }
             if (!isInstanceofPayload(payload)) {
-                throw new Error(`Payload must be an object with a 'value' property and an optional 'options' property.`);
+                setError(`Payload must be an object with a 'value' property and an optional 'options' property.`);
             } else {
                 if (actions && action in actions) {
                     const actionFunc = actions[action];
@@ -81,16 +92,13 @@ const createStore = <State extends object, Actions extends object>({ state, acti
                             actionFunc(_state, payload);
                             listeners.forEach((listener) => listener(_state));
                         } else {
-                            throw new Error(`Action '${action.toString()}' does not accept more than 2 arguments. If you want to pass more than 2 arguments, use the 'payload' options object property instead.`);
-                        }
-                        if (!isRestEmpty) {
-                            throw new Error(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
+                            setError(`Action '${action.toString()}' cannot accept more than 2 arguments. If you want to pass more than 2 arguments, use the 'payload' options object property instead.`);
                         }
                     } else {
-                        throw new Error(`Action '${action.toString()}' is not a function.`);
+                        setError(`Action '${action.toString()}' is not a function.`);
                     }
                 } else {
-                    throw new Error(`Action '${action.toString()}' is not a valid action.`);
+                    setError(`Action '${action.toString()}' is not a valid action.`);
                 }
             }
         },
