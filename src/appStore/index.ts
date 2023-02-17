@@ -64,7 +64,7 @@ const createStore  = <State extends object, Actions extends object>({state, acti
                 const actionFunc = actions[action] as Function;
                 const actionFuncParams = actionFunc.length;
                 if (actionFuncParams === 1) {
-                    actionFunc(_state);
+                    actionFunc(payload);
                 } else if (actionFuncParams === 2) {
                     actionFunc(_state, payload);
                 } else {
