@@ -77,7 +77,7 @@ const createStore = <State extends object, Actions extends object>({ state, acti
             }
             function isInstanceofPayload(obj: any): obj is Payload {
                 if (typeof obj === "object" && obj !== null) {
-                    if ("value" in obj || "value" in obj && "options" in obj) {
+                    if ("value" in obj) {
                         return true;
                     } else {
                         return false;
