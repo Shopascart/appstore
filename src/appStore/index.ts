@@ -62,7 +62,14 @@ const createStore  = <State extends object, Actions extends object>({state, acti
         dispatch: (action: keyof Actions, payload) => {
             if (actions && action in actions) {
                 const actionFunc = actions[action] as Function;
-                actionFunc(_state, payload);
+                const actionFuncParams = actionFunc.length;
+                if (actionFuncParams === 1) {
+                    actionFunc(_state);
+                } else if (actionFuncParams === 2) {
+                    actionFunc(_state, payload);
+                } else {
+                    throw new Error(`Action '${action.toString()}' has an invalid number of parameters. It should have 1 or 2 parameters.`);
+                }
                 listeners.forEach((listener) => listener(_state));
             }
             else {
