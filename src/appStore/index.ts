@@ -1,7 +1,6 @@
 import VALTIO from "./valtio";
-import { IStore, Action } from "../interface";
+import { IStore, Action, Payload } from "../interface";
 import react, { useEffect, useState } from "react";
-
 /**
  * A function that stores the application _state and has methods to operate on it.
  * @param {initialState} state - The initial state of the store
@@ -59,24 +58,28 @@ const createStore = <State extends object, Actions extends object>({ state, acti
         useSnapshot: () => {
             return VALTIO.useSnapshot<State>(_state) as State;
         },
-        dispatch: (action: keyof Actions, payload) => {
+        dispatch: (action, payload, ...rest) => {
+            const isRestEmpty = rest.length === 0;
             if (actions && action in actions) {
                 const actionFunc = actions[action];
                 if (typeof actionFunc === "function") {
-                    const actionFuncParams = actionFunc.length;
-                    if (actionFuncParams === 1) {
-                        actionFunc(_state);
-                    } else if (actionFuncParams === 2) {
+                    const actionFuncParamsLength = actionFunc.length;
+                    if (actionFuncParamsLength === 1) {
+                        actionFunc(payload);
+                        listeners.forEach((listener) => listener(_state));
+                    } else if (actionFuncParamsLength === 2) {
                         actionFunc(_state, payload);
+                        listeners.forEach((listener) => listener(_state));
                     } else {
-                        throw new Error(`Action '${action.toString()}' has an invalid number of parameters.`);
+                        throw new Error(`Action '${action.toString()}' does not accept more than 2 arguments. If you want to pass more than 2 arguments, use the 'payload' options object property instead.`);
                     }
-                    listeners.forEach((listener) => listener(_state));
+                    if (!isRestEmpty) {
+                        throw new Error(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
+                    }
                 } else {
                     throw new Error(`Action '${action.toString()}' is not a function.`);
                 }
-            }
-            else {
+            } else {
                 throw new Error(`Action '${action.toString()}' is not a valid action.`);
             }
         },
@@ -108,5 +111,5 @@ export function useStore<State, Actions>(store: IStore<State, Actions>): [State,
 
 
 
-export { IStore, Action };
+export { IStore, Action, Payload };
 export default createStore;

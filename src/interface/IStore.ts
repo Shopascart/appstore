@@ -1,6 +1,12 @@
-export type Action<State> = {
-    [key: string]: (_state: State, payload: any) => void;
+export type Payload = {
+    value: any;
+    options?: any;
 }
+
+export type Action<State> = {
+    [key: string]: (_state: State, payload: Payload) => void;
+}
+
 
 export default interface IStore<State, Actions> {
     /**
@@ -64,7 +70,7 @@ export default interface IStore<State, Actions> {
     /**
      * Dispatch an action to the store
      */
-    dispatch: (action: keyof Actions, payload: any) => void;
+    dispatch: (action: keyof Actions, payload: Payload) => void;
     serverInitialState: (initialState: State) => IStore<State, Actions>;
 }
 
