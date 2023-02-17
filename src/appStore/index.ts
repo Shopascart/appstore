@@ -1,13 +1,13 @@
 import VALTIO from "./valtio";
 import { IStore, Action } from "../interface";
-import react, {useEffect, useState } from "react";
+import react, { useEffect, useState } from "react";
 
 /**
  * A function that stores the application _state and has methods to operate on it.
  * @param {initialState} state - The initial state of the store
  * @param {actions} actions - The actions to dispatch to the store
  */
-const createStore  = <State extends object, Actions extends object>({state, actions}: {
+const createStore = <State extends object, Actions extends object>({ state, actions }: {
     state: State extends object ? State : never;
     actions: Actions extends object ? Actions : never;
 }) => {
@@ -61,16 +61,20 @@ const createStore  = <State extends object, Actions extends object>({state, acti
         },
         dispatch: (action: keyof Actions, payload) => {
             if (actions && action in actions) {
-                const actionFunc = actions[action] as Function;
-                const actionFuncParams = actionFunc.length;
-                if (actionFuncParams === 1) {
-                    actionFunc(payload);
-                } else if (actionFuncParams === 2) {
-                    actionFunc(_state, payload);
+                const actionFunc = actions[action];
+                if (typeof actionFunc === "function") {
+                    const actionFuncParams = actionFunc.length;
+                    if (actionFuncParams === 1) {
+                        actionFunc(_state);
+                    } else if (actionFuncParams === 2) {
+                        actionFunc(_state, payload);
+                    } else {
+                        throw new Error(`Action '${action.toString()}' has an invalid number of parameters.`);
+                    }
+                    listeners.forEach((listener) => listener(_state));
                 } else {
-                    throw new Error(`Action '${action.toString()}' has an invalid number of parameters. It should have 1 or 2 parameters.`);
+                    throw new Error(`Action '${action.toString()}' is not a function.`);
                 }
-                listeners.forEach((listener) => listener(_state));
             }
             else {
                 throw new Error(`Action '${action.toString()}' is not a valid action.`);
@@ -93,7 +97,7 @@ const createStore  = <State extends object, Actions extends object>({state, acti
  * @param store - The store to use
  * @returns - The state and actions of the store
  */
-export function useStore<State, Actions>(store: IStore<State, Actions>) : [State, Actions] {
+export function useStore<State, Actions>(store: IStore<State, Actions>): [State, Actions] {
     const [state, setState] = useState(store.getState());
     useEffect(() => {
         store.subscribe(setState);
@@ -104,5 +108,5 @@ export function useStore<State, Actions>(store: IStore<State, Actions>) : [State
 
 
 
-export {IStore, Action};
+export { IStore, Action };
 export default createStore;
