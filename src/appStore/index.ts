@@ -10,9 +10,11 @@ import react, { useEffect, useState } from "react";
 
 
 
-const createStore = <State extends object, Actions extends object>({ state, actions, config }: {
+const createStore = <State extends object, Actions extends object = {
+    [key: string]: (state: State, payload: Payload) => void;
+}>({ state, actions, config }: {
     state: State extends object ? State : never;
-    actions: Actions extends object ? Actions : never;
+    actions?: Actions extends object ? Actions : never;
     config?: {
         debug?: boolean;
     };
@@ -29,8 +31,8 @@ const createStore = <State extends object, Actions extends object>({ state, acti
         getState: () => {
             return _state;
         },
-        setState: (_state: State) => {
-            _state = _state;
+        setState: (state: State) => {
+            _state = state;
             listeners.forEach((listener) => listener(_state));
             return obj;
         },
@@ -49,17 +51,10 @@ const createStore = <State extends object, Actions extends object>({ state, acti
             if (name in _state) {
                 return _state[name];
             } else {
-                setError(`content '${name.toString()}' is not available in the _state.`);
+                setError(`content '${name.toString()}' is not available in the state.`);
             }
         },
-        actions: actions,
-        action: (name: keyof Actions) => {
-            if (actions && name in actions) {
-                return actions[name];
-            } else {
-                setError(`content '${name.toString()}' is not available in the actions.`);
-            }
-        },
+        actions: actions ? actions : {} as Actions,
         subscribe: (listener: (_state: State) => void) => {
             listeners.add(listener);
             return () => listeners.delete(listener);

@@ -1,6 +1,6 @@
 {
   "name": "@shopascart/appstore",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "description": "A simple store for your frontend react app",
   "main": "dist/cjs/index.js",
   "module": "dist/ts/index.js",

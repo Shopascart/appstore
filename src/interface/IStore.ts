@@ -15,19 +15,18 @@ export default interface IStore<State, Actions> {
     getState: () => State;
     /**
       * Set the state of the store
-      * @param name The name of the state to set
-      * @param value The value of the state to set
-      * @deprecated Use action instead
+      * @param state - The state to set
       */
     setState: (state: State) => IStore<State, Actions>;
     /**
      * Set a value in the store
-        * @param {string} name - The name of the value to set
+        * @param {string} name - The name of the state to set
+        * @param {any} value - The value to set
     **/
     set: (name: keyof State, value: any) => IStore<State, Actions>;
     /**
      * Get a value from the store
-     * @param {string} name - The name of the value to get
+     * @param {string} name - The name of the state to get
      */
     get: (name: keyof State) => any;
     /**
@@ -41,22 +40,24 @@ export default interface IStore<State, Actions> {
     */
     getAction?: (name: keyof Actions) => Actions[keyof Actions];
     /**
-     * Subscribe to changes in the store.
-     * @param {IState} state - The state of the store
-     * @param {function} callback - The callback to call when the store changes
-     */
-    /**
      * Get all actions from the store
      */
     actions: Actions;
     /**
      * Get an action from the store
+     * @deprecated Use actions destructuring or dispatch function instead 
+     * @example const { actionName } = useStore().actions;
+        store.dispatch('actionName', payload);
      */
-    action: (name: keyof Actions) => Actions[keyof Actions] | undefined;
+    action?: (name: keyof Actions) => Actions[keyof Actions];
+    /**
+     * Subscribe to changes in the store.
+     * @param {function} listener - The callback to call when the store changes
+     */
     subscribe: (listener: (state: State) => void) => () => void;
     /**
      * _Subscribe to changes in the store. This is a valtio subscribe method
-     * @param {IState} state - The state of the store
+     * @param {State} state - The state of the store
      * @param {function} callback - The callback to call when the store changes
      */
     _subscribe: (state: State, callback: any) => void;
@@ -65,12 +66,13 @@ export default interface IStore<State, Actions> {
      */
     useSnapshot: () => State;
     /**
-     *  Server Initial State
-     */
-    /**
      * Dispatch an action to the store
      */
     dispatch: (action: keyof Actions, payload: Payload) => void;
+    /**
+     *  Server Initial State
+     * @param {State} initialState - The initial state of the store
+     */
     serverInitialState: (initialState: State) => IStore<State, Actions>;
 }
 
