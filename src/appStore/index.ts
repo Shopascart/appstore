@@ -76,7 +76,15 @@ const createStore = <State extends object, Actions extends object>({ state, acti
                 setError(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
             }
             function isInstanceofPayload(obj: any): obj is Payload {
-                return 'value' in obj || 'value' in obj && 'options' in obj;
+                if (typeof obj === "object" && obj !== null) {
+                    if ("value" in obj || "value" in obj && "options" in obj) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
             if (!isInstanceofPayload(payload)) {
                 setError(`Payload must be an object with a 'value' property and an optional 'options' property.`);
