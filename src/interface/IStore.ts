@@ -64,7 +64,7 @@ export default interface IStore<State, Actions> {
     /**
      * Dispatch an action to the store
      */
-    dispatch: (action: string, payload: any) => void;
+    dispatch: (action: keyof Actions, payload: any) => void;
     serverInitialState: (initialState: State) => IStore<State, Actions>;
 }
 

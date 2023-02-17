@@ -38,7 +38,7 @@ const createStore  = <State extends object, Actions extends object>({state, acti
             if (name in _state) {
                 return _state[name];
             } else {
-                throw new Error(`content '${name as string}' is not available in the _state.`);
+                throw new Error(`content '${name.toString()}' is not available in the _state.`);
             }
         },
         actions: actions,
@@ -46,7 +46,7 @@ const createStore  = <State extends object, Actions extends object>({state, acti
             if (actions && name in actions) {
                 return actions[name];
             } else {
-                throw new Error(`content '${name as string}' is not available in the actions.`);
+                throw new Error(`content '${name.toString()}' is not available in the actions.`);
             }
         },
         subscribe: (listener: (_state: State) => void) => {
@@ -59,14 +59,14 @@ const createStore  = <State extends object, Actions extends object>({state, acti
         useSnapshot: () => {
             return VALTIO.useSnapshot<State>(_state) as State;
         },
-        dispatch: (action, payload) => {
+        dispatch: (action: keyof Actions, payload) => {
             if (actions && action in actions) {
-                const actionsObj = actions as Action<State>;
-                actionsObj[action](_state, payload);
+                const actionFunc = actions[action] as Function;
+                actionFunc(_state, payload);
                 listeners.forEach((listener) => listener(_state));
             }
             else {
-                throw new Error(`Action '${action}' is not a valid action.`);
+                throw new Error(`Action '${action.toString()}' is not a valid action.`);
             }
         },
         serverInitialState: (initialState: State) => {
