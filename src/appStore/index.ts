@@ -6,6 +6,10 @@ import react, { useEffect, useState } from "react";
  * @param {initialState} state - The initial state of the store
  * @param {actions} actions - The actions to dispatch to the store
  */
+
+
+
+
 const createStore = <State extends object, Actions extends object>({ state, actions }: {
     state: State extends object ? State : never;
     actions: Actions extends object ? Actions : never;
@@ -60,27 +64,34 @@ const createStore = <State extends object, Actions extends object>({ state, acti
         },
         dispatch: (action, payload, ...rest) => {
             const isRestEmpty = rest.length === 0;
-            if (actions && action in actions) {
-                const actionFunc = actions[action];
-                if (typeof actionFunc === "function") {
-                    const actionFuncParamsLength = actionFunc.length;
-                    if (actionFuncParamsLength === 1) {
-                        actionFunc(payload);
-                        listeners.forEach((listener) => listener(_state));
-                    } else if (actionFuncParamsLength === 2) {
-                        actionFunc(_state, payload);
-                        listeners.forEach((listener) => listener(_state));
+            function isInstanceofPayload(obj: any): obj is Payload {
+                return 'value' in obj || 'value' in obj && 'options' in obj;
+            }
+            if (!isInstanceofPayload(payload)) {
+                throw new Error(`Payload must be an object with a 'value' property and an optional 'options' property.`);
+            } else {
+                if (actions && action in actions) {
+                    const actionFunc = actions[action];
+                    if (typeof actionFunc === "function") {
+                        const actionFuncParamsLength = actionFunc.length;
+                        if (actionFuncParamsLength === 1) {
+                            actionFunc(payload);
+                            listeners.forEach((listener) => listener(_state));
+                        } else if (actionFuncParamsLength === 2) {
+                            actionFunc(_state, payload);
+                            listeners.forEach((listener) => listener(_state));
+                        } else {
+                            throw new Error(`Action '${action.toString()}' does not accept more than 2 arguments. If you want to pass more than 2 arguments, use the 'payload' options object property instead.`);
+                        }
+                        if (!isRestEmpty) {
+                            throw new Error(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
+                        }
                     } else {
-                        throw new Error(`Action '${action.toString()}' does not accept more than 2 arguments. If you want to pass more than 2 arguments, use the 'payload' options object property instead.`);
-                    }
-                    if (!isRestEmpty) {
-                        throw new Error(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
+                        throw new Error(`Action '${action.toString()}' is not a function.`);
                     }
                 } else {
-                    throw new Error(`Action '${action.toString()}' is not a function.`);
+                    throw new Error(`Action '${action.toString()}' is not a valid action.`);
                 }
-            } else {
-                throw new Error(`Action '${action.toString()}' is not a valid action.`);
             }
         },
         serverInitialState: (initialState: State) => {
