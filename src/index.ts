@@ -1,3 +1,3 @@
-import createStore, { IStore, Action, Payload } from "./appStore";
-export {IStore, Action, Payload};
+import createStore, { IStore, IAction, IPayload } from "./appStore";
+export {IStore, IAction, IPayload};
 export default createStore;

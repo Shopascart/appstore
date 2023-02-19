@@ -1,2 +1,2 @@
-import IStore, { Action, Payload} from './IStore';
-export type { IStore, Action, Payload };
+import IStore, { IAction, IPayload} from './IStore';
+export type { IStore, IAction, IPayload };

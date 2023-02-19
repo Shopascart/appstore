@@ -1,5 +1,5 @@
 import VALTIO from "./valtio";
-import { IStore, Action, Payload } from "../interface";
+import { IStore, IAction, IPayload } from "../interface";
 import react, { useEffect, useState } from "react";
 /**
  * A function that stores the application _state and has methods to operate on it.
@@ -10,33 +10,33 @@ import react, { useEffect, useState } from "react";
 
 
 
-const createStore = <State extends object, Actions extends object = {
-    [key: string]: (state: State, payload: Payload) => void;
+const createStore = <IState extends object, IActions extends object = {
+    [key: string]: (state: IState, payload: IPayload) => void;
 }>({ state, actions, config }: {
-    state: State extends object ? State : never;
-    actions?: Actions extends object ? Actions : never;
+    state: IState extends object ? IState : never;
+    actions?: IActions extends object ? IActions : never;
     config?: {
         debug?: boolean;
     };
 }) => {
-    let _state = VALTIO.proxy<State>(state) as State;
-    const listeners: Set<(_state: State) => void> = new Set();
+    let _state = VALTIO.proxy<IState>(state) as IState;
+    const listeners: Set<(_state: IState) => void> = new Set();
     let initialized = false;
     const setError = (msg: string) => {
         if (!config || config && config.debug) {
             throw new Error(msg);
         }
     }
-    let obj: IStore<State, Actions> = {
+    let obj: IStore<IState, IActions> = {
         getState: () => {
             return _state;
         },
-        setState: (state: State) => {
+        setState: (state: IState) => {
             _state = state;
             listeners.forEach((listener) => listener(_state));
             return obj;
         },
-        set: (name: keyof State, value: any) => {
+        set: (name: keyof IState, value: any) => {
             if (name in _state) {
                 _state[name] = value;
                 listeners.forEach((listener) => listener(_state));
@@ -47,30 +47,30 @@ const createStore = <State extends object, Actions extends object = {
             }
             return obj;
         },
-        get: (name: keyof State) => {
+        get: (name: keyof IState) => {
             if (name in _state) {
                 return _state[name];
             } else {
                 setError(`content '${name.toString()}' is not available in the state.`);
             }
         },
-        actions: actions ? actions : {} as Actions,
-        subscribe: (listener: (_state: State) => void) => {
+        actions: actions ? actions : {} as IActions,
+        subscribe: (listener: (_state: IState) => void) => {
             listeners.add(listener);
             return () => listeners.delete(listener);
         },
-        _subscribe: (_state: State, callback: any) => {
+        _subscribe: (_state: IState, callback: any) => {
             VALTIO.subscribe(_state, callback);
         },
         useSnapshot: () => {
-            return VALTIO.useSnapshot<State>(_state) as State;
+            return VALTIO.useSnapshot<IState>(_state) as IState;
         },
         dispatch: (action, payload, ...rest) => {
             const isRestEmpty = rest.length === 0;
             if (!isRestEmpty) {
                 setError(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
             }
-            function isInstanceofPayload(obj: any): obj is Payload {
+            function isInstanceofPayload(obj: any): obj is IPayload {
                 if (typeof obj === "object" && obj !== null) {
                     if ("value" in obj) {
                         return true;
@@ -105,7 +105,7 @@ const createStore = <State extends object, Actions extends object = {
                 }
             }
         },
-        serverInitialState: (initialState: State) => {
+        serverInitialState: (initialState: IState) => {
             if (!initialized) {
                 _state = VALTIO.proxy(initialState);
                 initialized = true;
@@ -122,7 +122,7 @@ const createStore = <State extends object, Actions extends object = {
  * @param store - The store to use
  * @returns - The state and actions of the store
  */
-export function useStore<State, Actions>(store: IStore<State, Actions>): [State, Actions] {
+export function useStore<IState, IActions>(store: IStore<IState, IActions>): [IState, IActions] {
     const [state, setState] = useState(store.getState());
     useEffect(() => {
         store.subscribe(setState);
@@ -133,5 +133,5 @@ export function useStore<State, Actions>(store: IStore<State, Actions>): [State,
 
 
 
-export { IStore, Action, Payload };
+export { IStore, IAction, IPayload };
 export default createStore;
