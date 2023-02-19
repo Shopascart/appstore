@@ -11,7 +11,7 @@ import react, { useEffect, useState } from "react";
 
 
 const createStore = <IState extends object, IActions extends object = {
-    [key: string]: (state: IState, payload: IPayload) => void;
+    [key: string]: (state: IState, payload: IPayload<any, any>) => void;
 }>({ state, actions, config }: {
     state: IState extends object ? IState : never;
     actions?: IActions extends object ? IActions : never;
@@ -70,7 +70,7 @@ const createStore = <IState extends object, IActions extends object = {
             if (!isRestEmpty) {
                 setError(`Dispatch '${action.toString()}' does not accept more than 2 arguments.`);
             }
-            function isInstanceofPayload(obj: any): obj is IPayload {
+            function isInstanceofPayload(obj: any): obj is IPayload<any, any> {
                 if (typeof obj === "object" && obj !== null) {
                     if ("value" in obj) {
                         return true;

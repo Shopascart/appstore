@@ -1,10 +1,10 @@
-export type IPayload = {
-    value: any;
-    options?: any;
+export type IPayload<Value, Options> = {
+    value: Value;
+    options?: Options;
 }
 
 export type IAction<IState> = {
-    [key: string]: (_state: IState, payload: IPayload) => void;
+    [key: string]: (_state: IState, payload: IPayload<any, any>) => void;
 }
 
 
@@ -68,7 +68,7 @@ export default interface IStore<IState, IActions> {
     /**
      * Dispatch an action to the store
      */
-    dispatch: (action: keyof IActions, payload: IPayload) => void;
+    dispatch: (action: keyof IActions, payload: IPayload<any, any>) => void;
     /**
      *  Server Initial IState
      * @param {IState} initialState - The initial state of the store
