@@ -1,4 +1,4 @@
-export type IPayload<Value, Options> = {
+export type IPayload<Value = any, Options = any> = {
     value: Value;
     options?: Options;
 }
