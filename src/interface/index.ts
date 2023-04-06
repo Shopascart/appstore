@@ -1,2 +1,2 @@
-import IStore, { IAction, IPayload} from './IStore';
-export type { IStore, IAction, IPayload };
+import IAppStore, { IAction, IPayload} from './IAppStore';
+export type { IAppStore, IAction, IPayload };

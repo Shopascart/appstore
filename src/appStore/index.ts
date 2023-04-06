@@ -1,5 +1,5 @@
 import VALTIO from "./valtio";
-import { IStore, IAction, IPayload } from "../interface";
+import { IAppStore, IAction, IPayload } from "../interface";
 import react, { useEffect, useState } from "react";
 /**
  * A function that stores the application _state and has methods to operate on it.
@@ -27,7 +27,7 @@ const createStore = <IState extends object, IActions extends object = {
             throw new Error(msg);
         }
     }
-    let obj: IStore<IState, IActions> = {
+    let obj: IAppStore<IState, IActions> = {
         getState: () => {
             return _state;
         },
@@ -122,7 +122,7 @@ const createStore = <IState extends object, IActions extends object = {
  * @param store - The store to use
  * @returns - The state and actions of the store
  */
-export function useStore<IState, IActions>(store: IStore<IState, IActions>): [IState, IActions] {
+export function useStore<IState, IActions>(store: IAppStore<IState, IActions>): [IState, IActions] {
     const [state, setState] = useState(store.getState());
     useEffect(() => {
         store.subscribe(setState);
@@ -133,5 +133,5 @@ export function useStore<IState, IActions>(store: IStore<IState, IActions>): [IS
 
 
 
-export { IStore, IAction, IPayload };
+export { IAppStore, IAction, IPayload };
 export default createStore;

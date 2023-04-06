@@ -1,6 +1,6 @@
 import { proxy, useSnapshot, subscribe } from 'valtio';
 import { watch } from 'valtio/utils';
-import { IStore } from '../interface';
+import { IAppStore } from '../interface';
 
 
 const PROXY = <State>(state: State) => {
@@ -15,7 +15,7 @@ const SUBSCRIBE = <State>(state: State, callback: any) => {
     return subscribe(state || {}, callback) as State;
 };
 
-const WATCH = <State, Actions>(callback: (get: (state: State | any) => IStore<State, Actions>) => void) => {
+const WATCH = <State, Actions>(callback: (get: (state: State | any) => IAppStore<State, Actions>) => void) => {
     return watch(callback);
 };
 

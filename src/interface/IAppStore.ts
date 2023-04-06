@@ -8,7 +8,7 @@ export type IAction<IState> = {
 }
 
 
-export default interface IStore<IState, IActions> {
+export default interface IAppStore<IState, IActions> {
     /**
      * Get the state of the store
      */
@@ -17,13 +17,13 @@ export default interface IStore<IState, IActions> {
       * Set the state of the store
       * @param state - The state to set
       */
-    setState: (state: IState) => IStore<IState, IActions>;
+    setState: (state: IState) => IAppStore<IState, IActions>;
     /**
      * Set a value in the store
         * @param {string} name - The name of the state to set
         * @param {any} value - The value to set
     **/
-    set: (name: keyof IState, value: any) => IStore<IState, IActions>;
+    set: (name: keyof IState, value: any) => IAppStore<IState, IActions>;
     /**
      * Get a value from the store
      * @param {string} name - The name of the state to get
@@ -73,6 +73,6 @@ export default interface IStore<IState, IActions> {
      *  Server Initial IState
      * @param {IState} initialState - The initial state of the store
      */
-    serverInitialState: (initialState: IState) => IStore<IState, IActions>;
+    serverInitialState: (initialState: IState) => IAppStore<IState, IActions>;
 }
 
