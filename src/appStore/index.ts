@@ -2,7 +2,7 @@ import VALTIO from "./valtio";
 import { IAppStore, IAction, IPayload } from "../interface";
 import react, { useEffect, useState } from "react";
 /**
- * A function that stores the application _state and has methods to operate on it.
+ * A function that stores the application state and has methods to operate on it.
  * @param {initialState} state - The initial state of the store
  * @param {actions} actions - The actions to dispatch to the store
  */
